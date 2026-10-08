@@ -1,10 +1,11 @@
-import { runAllSelfTests } from "./self-test.js";
-import { runTradeCase } from "./workflow.js";
-import { observeSwarm, renderPlanLevels, renderRuntimeTimeline } from "./skills/orchestration-hub/index.js";
+import { runAllSelfTests } from "../../apps/web/src/self-test.js";
+import { runTradeCase } from "../../apps/web/src/workflow.js";
+import { observeSwarm, renderPlanLevels, renderRuntimeTimeline } from "../../apps/web/src/skills/orchestration-hub/index.js";
 import { writeFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 import { renderDashboardHtml } from "./dashboard.js";
 import { runAcceptance } from "./acceptance.js";
+import { findPluginRoot } from "./package-paths.js";
 
 async function main(): Promise<void> {
   const args = new Set(process.argv.slice(2));
@@ -23,7 +24,8 @@ async function main(): Promise<void> {
   const traceEnabled = args.has("--live") || args.has("--incident") || args.has("--trace");
   if (traceEnabled) process.env.BEETRUST_TRACE = "1";
   const workflow = await runTradeCase(undefined, { liveSources: args.has("--live"), includeRedTeam: true });
-  const dashboardPath = fileURLToPath(new URL("./beetrust-dashboard.html", import.meta.url));
+  const pluginRoot = findPluginRoot(import.meta.url);
+  const dashboardPath = join(pluginRoot, "dist", "beetrust-dashboard.html");
   writeFileSync(dashboardPath, renderDashboardHtml(workflow), "utf8");
   console.log("BeeTrust Honey Export Release Desk");
   console.log(`Case: ${workflow.tradeCase.caseId} | Batch: ${workflow.tradeCase.batchId}`);
@@ -47,6 +49,6 @@ main().catch((error) => {
   process.exitCode = 1;
 });
 
-export { runAllSelfTests } from "./self-test.js";
+export { runAllSelfTests } from "../../apps/web/src/self-test.js";
 export { runAcceptance } from "./acceptance.js";
-export { runTradeCase } from "./workflow.js";
+export { runTradeCase } from "../../apps/web/src/workflow.js";

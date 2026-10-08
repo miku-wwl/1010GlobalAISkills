@@ -3,6 +3,11 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const sharedSourceRoot = resolve(packageRoot, "..", "apps", "web", "src");
+const sharedBuildRoot = join(packageRoot, "dist", "apps", "web", "src");
+const sharedSourceAvailable = existsSync(sharedSourceRoot);
+const sharedRoot = sharedSourceAvailable ? sharedSourceRoot : sharedBuildRoot;
+const sharedExtension = sharedSourceAvailable ? ".ts" : ".js";
 const skillNames = [
   "orchestration-hub",
   "fingerprint-evidence",
@@ -28,6 +33,11 @@ requirePath("docs/privacy-policy.md");
 requirePath("docs/terms-of-use.md");
 requirePath("package.json");
 requirePath("src/index.ts");
+requirePath("src/mcp-server.ts");
+requirePath("src/public-api.ts");
+requirePath("dist/beetrust-plugin/src/mcp-server.js");
+requirePath("dist/beetrust-plugin/src/public-api.js");
+requirePath("dist/apps/web/src/public-api.js");
 requirePath("tests/README.md");
 requirePath("tests/public-submission-test-cases.json");
 
@@ -89,8 +99,12 @@ for (const skillName of skillNames) {
   requirePath(`${skillRoot}/SKILL.md`);
   requirePath(`${skillRoot}/scripts/run-example.mjs`);
   requirePath(`${skillRoot}/resources`);
-  requirePath(`src/skills/${skillName}/index.ts`);
-  requirePath(`src/skills/${skillName}/tests.ts`);
+  if (!existsSync(join(sharedRoot, "skills", skillName, `index${sharedExtension}`))) {
+    failures.push(`missing:shared-skill-implementation:${skillName}`);
+  }
+  if (!existsSync(join(sharedRoot, "skills", skillName, `tests${sharedExtension}`))) {
+    failures.push(`missing:shared-skill-tests:${skillName}`);
+  }
   requirePath(`tests/skills/${skillName}/tests.ts`);
 
   if (existsSync(skillPath)) {

@@ -47,7 +47,8 @@ AutoGen/AgentVerse runtime.
 
 ```powershell
 cd apps/web
-npm install
+npm ci
+npm run build
 npm test
 npm run demo
 npm run demo:live
@@ -62,7 +63,7 @@ The page shows evidence coverage, fault detection, parallel agent count and a la
 pilot time proxy. These are reproducible fixture metrics, not a claim about a live
 enterprise's historical savings.
 
-The demo also writes `dist/beetrust-dashboard.html`, a self-contained runtime view of the DAG, evidence gates, red-team outcomes and `SkillMessage/v1` timeline.
+The demo also writes `dist/beetrust-dashboard.html`, a self-contained runtime view of the DAG, evidence gates, red-team outcomes and `SkillMessage/v1` timeline. The `dist/` directory is generated and can be removed before a clean rebuild.
 
 ## Shared protocol
 
@@ -71,6 +72,8 @@ Every dispatch event uses `SkillMessage/v1`:
 ```text
 { id, caseId, correlationId, skill, type, timestamp, attempt, status, payload, evidenceRefs }
 ```
+
+The `.agents/skills/` files are Codex discovery entry points. Their canonical contracts and resources live in `apps/web/skills/`, and the single TypeScript implementation for all seven Skills lives in `apps/web/src/skills/`. The plugin's thin runtime adapters import that same TypeScript source and compile it into the plugin build output; the skill rules, types, tests, workflow, and protocol are not copied into a second source tree.
 
 All seven roles register their trigger words in `src/trigger-registry.ts`, so an incoming command can be routed to one or more skills without introducing a second protocol.
 
@@ -93,4 +96,4 @@ The demonstrator uses Comvita Limited as the named New Zealand case owner becaus
 - MFAT guide to using free trade agreements: https://www.mfat.govt.nz/en/trade/how-we-help-exporters/guide-to-using-free-trade-agreements-for-goods-exporters
 - Comvita public investor centre: https://comvita.co.nz/pages/investor-centre
 
-Each skill has a local `skills/<name>/SKILL.md` contract and supporting TypeScript scripts in `src/skills/<name>/index.ts` and `tests.ts`. The seven suites contain at least 20 cases each (the package currently runs 192 cases). `npm run acceptance` also executes every runnable Skill example, checks contract sections, validates the knowledge package and verifies the two public demo decks are included in the release archive.
+Each skill has a local `skills/<name>/SKILL.md` contract and supporting TypeScript implementation and tests in `src/skills/<name>/`. The seven suites currently run 198 cases. `npm run acceptance` also executes every runnable Skill example, checks contract sections, validates the knowledge package and verifies the two public demo decks are included in the release archive.

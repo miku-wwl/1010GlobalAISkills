@@ -1,9 +1,0 @@
-{
-  "batchId": "BATCH-EXAMPLE",
-  "eventId": "event-001",
-  "timestamp": "2026-09-01T00:00:00Z",
-  "actor": "example-exporter",
-  "location": "New Zealand",
-  "action": "HARVEST",
-  "quantity": 10
-}

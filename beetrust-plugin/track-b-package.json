@@ -29,8 +29,8 @@
     {
       "name": "orchestration-hub",
       "role": "Intent parsing, dependency planning, dispatch and retry coordination",
-      "implementation": "src/skills/orchestration-hub/index.ts",
-      "tests": "src/skills/orchestration-hub/tests.ts",
+      "implementation": "../apps/web/src/skills/orchestration-hub/index.ts",
+      "tests": "../apps/web/src/skills/orchestration-hub/tests.ts",
       "contract": "skills/orchestration-hub/SKILL.md",
       "resources": "skills/orchestration-hub/resources",
       "scripts": "skills/orchestration-hub/scripts"
@@ -38,8 +38,8 @@
     {
       "name": "fingerprint-evidence",
       "role": "Scientific batch evidence comparison",
-      "implementation": "src/skills/fingerprint-evidence/index.ts",
-      "tests": "src/skills/fingerprint-evidence/tests.ts",
+      "implementation": "../apps/web/src/skills/fingerprint-evidence/index.ts",
+      "tests": "../apps/web/src/skills/fingerprint-evidence/tests.ts",
       "contract": "skills/fingerprint-evidence/SKILL.md",
       "resources": "skills/fingerprint-evidence/resources",
       "scripts": "skills/fingerprint-evidence/scripts"
@@ -47,8 +47,8 @@
     {
       "name": "custody-ledger",
       "role": "Tamper-evident chain-of-custody verification",
-      "implementation": "src/skills/custody-ledger/index.ts",
-      "tests": "src/skills/custody-ledger/tests.ts",
+      "implementation": "../apps/web/src/skills/custody-ledger/index.ts",
+      "tests": "../apps/web/src/skills/custody-ledger/tests.ts",
       "contract": "skills/custody-ledger/SKILL.md",
       "resources": "skills/custody-ledger/resources",
       "scripts": "skills/custody-ledger/scripts"
@@ -56,8 +56,8 @@
     {
       "name": "mpi-market-access",
       "role": "Destination market-access evidence and rule checks",
-      "implementation": "src/skills/mpi-market-access/index.ts",
-      "tests": "src/skills/mpi-market-access/tests.ts",
+      "implementation": "../apps/web/src/skills/mpi-market-access/index.ts",
+      "tests": "../apps/web/src/skills/mpi-market-access/tests.ts",
       "contract": "skills/mpi-market-access/SKILL.md",
       "resources": "skills/mpi-market-access/resources",
       "scripts": "skills/mpi-market-access/scripts"
@@ -65,8 +65,8 @@
     {
       "name": "customs-clearance",
       "role": "Customs candidates, landed-value estimate and document drafts",
-      "implementation": "src/skills/customs-clearance/index.ts",
-      "tests": "src/skills/customs-clearance/tests.ts",
+      "implementation": "../apps/web/src/skills/customs-clearance/index.ts",
+      "tests": "../apps/web/src/skills/customs-clearance/tests.ts",
       "contract": "skills/customs-clearance/SKILL.md",
       "resources": "skills/customs-clearance/resources",
       "scripts": "skills/customs-clearance/scripts"
@@ -74,8 +74,8 @@
     {
       "name": "trade-risk-adversary",
       "role": "Controlled fault injection and adversarial stress testing",
-      "implementation": "src/skills/trade-risk-adversary/index.ts",
-      "tests": "src/skills/trade-risk-adversary/tests.ts",
+      "implementation": "../apps/web/src/skills/trade-risk-adversary/index.ts",
+      "tests": "../apps/web/src/skills/trade-risk-adversary/tests.ts",
       "contract": "skills/trade-risk-adversary/SKILL.md",
       "resources": "skills/trade-risk-adversary/resources",
       "scripts": "skills/trade-risk-adversary/scripts"
@@ -83,8 +83,8 @@
     {
       "name": "evidence-monitor",
       "role": "Evidence matrix, release gates and outcome reporting",
-      "implementation": "src/skills/evidence-monitor/index.ts",
-      "tests": "src/skills/evidence-monitor/tests.ts",
+      "implementation": "../apps/web/src/skills/evidence-monitor/index.ts",
+      "tests": "../apps/web/src/skills/evidence-monitor/tests.ts",
       "contract": "skills/evidence-monitor/SKILL.md",
       "resources": "skills/evidence-monitor/resources",
       "scripts": "skills/evidence-monitor/scripts"
@@ -95,7 +95,7 @@
     "validationCommand": "npm run acceptance",
     "packageCommand": "npm run pack:trackb",
     "externalRuntime": "LangGraph 1.4.16 local adapter (GraphFlow-compatible)",
-    "runtimeAdapter": "src/framework-runtime.ts",
+    "runtimeAdapter": "../apps/web/src/framework-runtime.ts",
     "runtimeVersion": "langgraph/1.4.16-beetrust-adapter/1.0",
     "dependencies": ["@langchain/langgraph@^1.4.16"]
   },

@@ -1,4 +1,4 @@
-import type { SkillName, WorkflowRun } from "./types.js";
+import type { SkillName, WorkflowRun } from "../../apps/web/src/types.js";
 
 const DEMO_SCENARIOS: Array<{ id: string; kicker: string; title: string; description: string; target: string }> = [
   { id: "scenario-a", kicker: "SCENARIO A · BLUE TEAM", title: "Happy Path", description: "Run three evidence checks in parallel, complete the release gates, and demonstrate RELEASE.", target: "execution-sequence" },

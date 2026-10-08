@@ -1,6 +1,0 @@
-{
-  "destination": "Australia",
-  "ruleVersion": "MPI-AU-2026.09",
-  "requiredEvidence": ["listedBeekeeper", "harvestDeclaration", "rmp", "exportCertificate"],
-  "sourcePolicy": "source URLs and current destination requirements must be revalidated before real use"
-}

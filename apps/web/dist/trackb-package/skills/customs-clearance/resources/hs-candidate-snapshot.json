@@ -1,6 +1,0 @@
-{
-  "productFamily": "honey",
-  "candidateHandling": "candidate only",
-  "documents": ["COMMERCIAL_INVOICE", "PACKING_LIST", "TSW_DRAFT"],
-  "sourcePolicy": "broker confirmation is required before declaration"
-}

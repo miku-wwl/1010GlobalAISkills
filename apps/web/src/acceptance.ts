@@ -1,6 +1,6 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { execFile } from "node:child_process";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { toAgentVerseTeamConfig, toAutoGenTeamConfig, validateFrameworkMessages } from "./framework-bridge.js";
@@ -66,8 +66,13 @@ export interface AcceptanceReport {
   };
 }
 
+export interface AcceptancePaths {
+  packageRoot?: string;
+  publicMaterialsRoot?: string;
+  resolvePackagePath?: (relativePath: string) => string;
+}
+
 const appRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
-const manifestPath = join(appRoot, "track-b-package.json");
 const execFileAsync = promisify(execFile);
 
 function addCheck(checks: AcceptanceCheck[], name: string, passed: boolean, details: string,
@@ -133,7 +138,9 @@ function naturalTriggerFixtureMetrics(): {
   };
 }
 
-function packageStructureChecks(manifest: PackageManifest, checks: AcceptanceCheck[]): void {
+function packageStructureChecks(manifest: PackageManifest, checks: AcceptanceCheck[],
+                                resolvePackagePath: (relativePath: string) => string,
+                                publicMaterialsRoot: string): void {
   const registrySkills = Object.keys(TRIGGER_REGISTRY) as SkillName[];
   const manifestSkills = manifest.skills.map((skill) => skill.name);
   addCheck(checks, "effective-skill-count",
@@ -152,11 +159,11 @@ function packageStructureChecks(manifest: PackageManifest, checks: AcceptanceChe
 
   for (const skill of manifest.skills) {
     const paths = [
-      join(appRoot, skill.implementation),
-      join(appRoot, skill.tests),
-      join(appRoot, skill.contract),
-      join(appRoot, skill.resources),
-      join(appRoot, skill.scripts)
+      resolvePackagePath(skill.implementation),
+      resolvePackagePath(skill.tests),
+      resolvePackagePath(skill.contract),
+      resolvePackagePath(skill.resources),
+      resolvePackagePath(skill.scripts)
     ];
     const [implementation, tests, contract, resources, scripts] = paths;
     const resourceFiles = existsSync(resources) ? readdirSync(resources) : [];
@@ -171,7 +178,7 @@ function packageStructureChecks(manifest: PackageManifest, checks: AcceptanceChe
       `SKILL.md has ${contractSections.filter((section) => contractText.includes(section)).length}/${contractSections.length} required executable sections`);
   }
   if (manifest.evidenceSources) {
-    const evidenceSourcesPath = join(appRoot, manifest.evidenceSources);
+    const evidenceSourcesPath = resolvePackagePath(manifest.evidenceSources);
     addCheck(checks, "public-evidence-source-register", existsSync(evidenceSourcesPath),
       `evidence source register exists at ${manifest.evidenceSources}`);
     if (existsSync(evidenceSourcesPath)) {
@@ -183,13 +190,13 @@ function packageStructureChecks(manifest: PackageManifest, checks: AcceptanceChe
     }
   }
   if (manifest.knowledge) {
-    const knowledgePath = join(appRoot, manifest.knowledge);
+    const knowledgePath = resolvePackagePath(manifest.knowledge);
     const knowledgeFiles = existsSync(knowledgePath) ? readdirSync(knowledgePath) : [];
     addCheck(checks, "knowledge-distillation-package", existsSync(knowledgePath) && knowledgeFiles.length >= 4,
       `${knowledgeFiles.length} versioned knowledge files are available at ${manifest.knowledge}`);
   }
   const publicMaterials = manifest.publicMaterials ?? [];
-  addCheck(checks, "public-demo-materials", publicMaterials.length >= 2 && publicMaterials.every((item) => existsSync(join(appRoot, "..", "..", item))),
+  addCheck(checks, "public-demo-materials", publicMaterials.length >= 2 && publicMaterials.every((item) => existsSync(join(publicMaterialsRoot, item))),
     `${publicMaterials.length} public demo materials are traceable from the repository`);
 }
 
@@ -218,13 +225,15 @@ function domainRuleEffectivenessCheck(workflow: Awaited<ReturnType<typeof runTra
     `MPI valid=${validMpi}, missing harvest blocks=${missingHarvest}, honey HS candidate=${honeyClassification}`);
 }
 
-async function runnableExamplesCheck(manifest: PackageManifest, checks: AcceptanceCheck[]): Promise<void> {
+async function runnableExamplesCheck(manifest: PackageManifest, checks: AcceptanceCheck[],
+                                    packageRoot: string,
+                                    resolvePackagePath: (relativePath: string) => string): Promise<void> {
   const results: string[] = [];
   for (const skill of manifest.skills) {
-    const scriptsDir = join(appRoot, skill.scripts);
+    const scriptsDir = resolvePackagePath(skill.scripts);
     const script = join(scriptsDir, "run-example.mjs");
     try {
-      await execFileAsync(process.execPath, [script], { cwd: appRoot, timeout: 20_000, maxBuffer: 2_000_000 });
+      await execFileAsync(process.execPath, [script], { cwd: packageRoot, timeout: 20_000, maxBuffer: 2_000_000 });
       results.push(`${skill.name}=PASS`);
     } catch (error) {
       results.push(`${skill.name}=FAIL:${error instanceof Error ? error.message : String(error)}`);
@@ -271,11 +280,15 @@ async function invalidInputFallbackCheck(workflow: Awaited<ReturnType<typeof run
     `malformed fingerprint=${malformedFingerprint.status}, unknown market=${invalidMpi.status}, invalid customs=${invalidCustoms.status}; fail-closed branches=${passed ? 3 : 0}/3`);
 }
 
-export async function runAcceptance(): Promise<AcceptanceReport> {
+export async function runAcceptance(paths: AcceptancePaths = {}): Promise<AcceptanceReport> {
   const checks: AcceptanceCheck[] = [];
+  const packageRoot = paths.packageRoot ?? appRoot;
+  const resolvePackagePath = paths.resolvePackagePath ?? ((relativePath: string) => join(packageRoot, relativePath));
+  const publicMaterialsRoot = paths.publicMaterialsRoot ?? resolve(packageRoot, "..", "..");
+  const manifestPath = join(packageRoot, "track-b-package.json");
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as PackageManifest;
-  packageStructureChecks(manifest, checks);
-  await runnableExamplesCheck(manifest, checks);
+  packageStructureChecks(manifest, checks, resolvePackagePath, publicMaterialsRoot);
+  await runnableExamplesCheck(manifest, checks, packageRoot, resolvePackagePath);
   await realHttpToolCheck(checks);
 
   const summaries = await runAllSelfTests();

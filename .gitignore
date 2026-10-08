@@ -1,2 +1,18 @@
 # Local competition reference documents; keep them out of Git.
 /documentation/
+
+# Install and build outputs are reproducible from the package lockfiles.
+**/node_modules/
+**/dist/
+**/dist-scripts/
+**/dist-*/
+**/build/
+**/coverage/
+**/.cache/
+**/*.tsbuildinfo
+**/*.map
+**/*.log
+
+# New review renders and capture scratch files should stay local. Existing
+# tracked video captures are retained as project media.
+/tmp/

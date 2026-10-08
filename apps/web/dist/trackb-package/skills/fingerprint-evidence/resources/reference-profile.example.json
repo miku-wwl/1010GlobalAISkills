@@ -1,7 +1,0 @@
-{
-  "referenceBatchId": "REFERENCE-EXAMPLE",
-  "features": [
-    {"name": "methylglyoxal", "value": 0.6, "unit": "percent", "tolerance": 0.1}
-  ],
-  "use": "non-production example fixture"
-}

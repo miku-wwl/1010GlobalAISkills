@@ -29,6 +29,8 @@ Red-team demonstrations must use the existing controlled fault catalogue and mus
 
 - Keep the existing TypeScript API contract.
 - Keep `apps/web/skills` as the canonical documentation and resource location.
+- Keep the canonical TypeScript Skill implementations in `apps/web/src/skills`; plugin runtime adapters must import that source rather than add mirrored business logic.
+- `beetrust-plugin` compiles the shared source into its ignored `dist/apps/web/src/` output and keeps only plugin-specific entry points under `beetrust-plugin/src/`.
 - Do not move runnable examples without checking their `apps/web/dist` relative imports.
 - Do not claim a demo passed from static inspection; build and execute the relevant commands.
 
